@@ -7,9 +7,17 @@ import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -38,6 +46,20 @@ public class VideoService {
             log.debug("VideoFileUtils init complete.");
         } catch (Exception e) {
             log.error("VideoFileUtils init fail.", e);
+        }
+    }
+    /*
+    * @description 클라이언트에서 받은 미디어를 복사한다.
+    * @param enctype="multipart/form-data" file 영상, uploadDir 업로드 경로
+    * */
+    public void uploadFile(MultipartFile file, String uploadDir) {
+        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
+
+        try {
+            Files.copy(file.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not store file : " + file.getOriginalFilename());
         }
     }
 
@@ -69,6 +91,8 @@ public class VideoService {
         metadata.tags = probeResult.getFormat().tags.toString();
         metadata.duration = probeResult.getFormat().duration;
         metadata.size = probeResult.getFormat().size;
+
+        System.out.println(metadata.filename);
 
         return metadata;
     }
