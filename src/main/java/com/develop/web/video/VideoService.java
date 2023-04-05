@@ -2,9 +2,7 @@ package com.develop.web.video;
 
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +14,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class VideoFileUtils {
+public class VideoService {
     @Value("/opt/homebrew/Cellar/ffmpeg/5.1.2_6/bin/ffmpeg")
     private String ffmpegPath;
     @Value("/opt/homebrew/Cellar/ffmpeg/5.1.2_6/bin/ffprobe")
@@ -73,6 +71,27 @@ public class VideoFileUtils {
         metadata.size = probeResult.getFormat().size;
 
         return metadata;
+    }
+
+    /*
+    * @description 파일 이름이 이미 업로드된 파일들과 겹치지 않게 UUID를 사용
+    * @param originalFilename 원본 파일 이름
+    * @return 파일이름.확장자
+    * */
+    private String createStoreFileName(String originalFilename) {
+        String ext = extractExt(originalFilename);
+        String uuid = UUID.randomUUID().toString();
+        return uuid + "." + ext;
+    }
+
+    /*
+     * @description 업로드한 파일에서 확장자를 추출한다.
+     * @param originalFilename 원본 파일 이름
+     * @return 파일 확장자
+     * */
+    private String extractExt(String originalFilename) {
+        int pos = originalFilename.lastIndexOf(".");
+        return originalFilename.substring(pos + 1);
     }
 }
 

@@ -13,10 +13,10 @@ import java.io.IOException;
 * */
 public class VideoController {
 
-    private final VideoFileUtils videoFileUtils;
+    private final VideoService videoService;
 
-    public VideoController(VideoFileUtils videoFileUtils) {
-        this.videoFileUtils = videoFileUtils;
+    public VideoController(VideoService videoService) {
+        this.videoService = videoService;
     }
 
     String filePath = "";
@@ -24,7 +24,7 @@ public class VideoController {
 
     @GetMapping(value = "/video")
     public ResponseEntity video() throws IOException {
-        Metadata metadata = videoFileUtils.getMediaInfo(filePath + filename);
+        Metadata metadata = videoService.getMediaInfo(filePath + filename);
 
         return ResponseEntity.ok().body(metadata);
     }
