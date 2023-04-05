@@ -52,8 +52,10 @@ public class VideoService {
     * @description 클라이언트에서 받은 미디어를 복사한다.
     * @param enctype="multipart/form-data" file 영상, uploadDir 업로드 경로
     * */
-    public void uploadFile(MultipartFile file, String uploadDir) {
-        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
+    public String uploadFile(MultipartFile file, String uploadDir) {
+        String uuid = createStoreFileName(file.getOriginalFilename());
+
+        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(uuid)));
 
         try {
             Files.copy(file.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -61,6 +63,8 @@ public class VideoService {
             e.printStackTrace();
             throw new RuntimeException("Could not store file : " + file.getOriginalFilename());
         }
+
+        return uuid;
     }
 
     /*
