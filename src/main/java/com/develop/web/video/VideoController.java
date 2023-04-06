@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -23,8 +22,8 @@ public class VideoController {
     @Value("${app.upload.dir:${user.home}/movies/archive}")
     private String uploadDir;
 
-    @PostMapping(value = "/upload")
-    public ResponseEntity upload(@RequestParam(value = "files", required = false) MultipartFile file, HttpServletRequest request) throws IOException {
+    @GetMapping(value = "/upload")
+    public ResponseEntity<Metadata> upload(@RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
         String source = videoService.uploadFile(file, uploadDir);
         Metadata metadata = videoService.getMediaInfo(uploadDir+"/"+source);
 
