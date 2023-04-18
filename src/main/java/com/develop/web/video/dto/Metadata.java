@@ -1,4 +1,4 @@
-package com.develop.web.video;
+package com.develop.web.video.dto;
 
 import lombok.Data;
 
