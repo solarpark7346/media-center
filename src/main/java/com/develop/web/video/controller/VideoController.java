@@ -1,6 +1,6 @@
 package com.develop.web.video.controller;
+import com.develop.web.video.dto.FileDto;
 import com.develop.web.video.service.FetcherFileExt;
-import com.develop.web.video.service.MakeNameUUID;
 import com.develop.web.video.service.MediaDataFetcher;
 import com.develop.web.video.service.UploadFile;
 import com.develop.web.video.dto.Metadata;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.UUID;
 
 /* http://localhost:8081/swagger-ui */
 
@@ -26,7 +27,6 @@ import java.io.IOException;
 public class VideoController {
 
     private final FetcherFileExt fetcherFileExt;
-    private final MakeNameUUID makeNameUUID;
     private final UploadFile uploadFile;
     private final MediaDataFetcher mediaDataFetcher;
 
@@ -39,7 +39,7 @@ public class VideoController {
     private FFprobe ffprobe;
 
     /**
-    * FFmpeg를 사용할 수 있도록 초기화
+    * FFmpeg를 사용할 수 있도록 초기화기
     * */
     @PostConstruct
     public void init(){
@@ -60,15 +60,22 @@ public class VideoController {
     private String uploadDir;
 
     @GetMapping(value = "/upload")
-   public ResponseEntity<Metadata> upload(@RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+   public ResponseEntity<Metadata> upload(@RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
         String fileOriginalFilename = file.getOriginalFilename();
         assert fileOriginalFilename != null;
 
         String extractExt = fetcherFileExt.extractExt(fileOriginalFilename);
-        String uuid = makeNameUUID.createStoreFileName(extractExt);
+        String uuid = UUID.randomUUID().toString();
 
-        String source = uploadFile.copyFile(file, uuid, uploadDir);
-        Metadata metadata = mediaDataFetcher.getMediaInfo(ffprobe, uploadDir+"/"+source);
+        FileDto fileDto = new FileDto();
+        fileDto.uuid = uuid;
+        fileDto.originalFileName = fileOriginalFilename;
+        fileDto.ext = extractExt;
+
+        String filenameUUID = uuid + "." + extractExt;
+        String source = uploadFile.copyFile(file, filenameUUID, uploadDir);
+        Metadata metadata = mediaDataFetcher.getMediaInfo(ffprobe, uploadDir+"/"+source, fileDto);
+        System.out.println("\n▼ ResponseEntity ▼ " + metadata.toString());
 
         return ResponseEntity.ok().body(metadata);
     }

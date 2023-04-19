@@ -1,5 +1,6 @@
 package com.develop.web.video.service;
 
+import com.develop.web.video.dto.FileDto;
 import com.develop.web.video.dto.Metadata;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
@@ -24,13 +25,15 @@ public class MediaDataFetcher {
      * - size : 사이즈(용량)
      * @return metadata (json)
      * */
-    public Metadata getMediaInfo(FFprobe ffprobe, String filePath) throws IOException {
+    public Metadata getMediaInfo(FFprobe ffprobe, String filePath, FileDto fileDto) throws IOException {
         System.out.println("파일 : " + filePath);
         FFmpegProbeResult probeResult = ffprobe.probe(filePath);
 
         Metadata metadata = new Metadata();
 
-        metadata.filename = StringUtils.getFilename(probeResult.getFormat().filename);
+        metadata.id = fileDto.uuid;
+        metadata.filename = fileDto.originalFileName;
+        metadata.ext = fileDto.ext;
         metadata.width = probeResult.getStreams().get(0).width;
         metadata.height = probeResult.getStreams().get(0).height;
         metadata.format_name = probeResult.getFormat().format_name;
@@ -38,8 +41,6 @@ public class MediaDataFetcher {
         metadata.tags = probeResult.getFormat().tags.toString();
         metadata.duration = probeResult.getFormat().duration;
         metadata.size = probeResult.getFormat().size;
-
-        System.out.println(metadata.filename);
 
         return metadata;
     }

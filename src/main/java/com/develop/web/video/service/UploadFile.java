@@ -20,9 +20,9 @@ public class UploadFile {
     * @description 클라이언트에서 받은 미디어를 복사한다.
     * @param file 영상, uploadDir 업로드 경로
     * */
-    public String copyFile(MultipartFile file, String uuid, String uploadDir) {
+    public String copyFile(MultipartFile file, String filenameUUID, String uploadDir) {
 
-        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(uuid)));
+        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(filenameUUID)));
 
         try {
             Files.copy(file.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -31,7 +31,7 @@ public class UploadFile {
             throw new RuntimeException("Could not store file : " + file.getOriginalFilename());
         }
 
-        return uuid;
+        return filenameUUID;
     }
 
 }
