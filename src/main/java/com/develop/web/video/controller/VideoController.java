@@ -1,4 +1,5 @@
 package com.develop.web.video.controller;
+import com.develop.web.utils.RouteStatus;
 import com.develop.web.video.dto.FileDto;
 import com.develop.web.video.service.FetcherFileExt;
 import com.develop.web.video.service.MediaDataFetcher;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -29,6 +31,7 @@ public class VideoController {
     private final FetcherFileExt fetcherFileExt;
     private final UploadFile uploadFile;
     private final MediaDataFetcher mediaDataFetcher;
+    private final RouteStatus routeStatus;
 
     @Value("/opt/homebrew/Cellar/ffmpeg/5.1.2_6/bin/ffmpeg")
     private String ffmpegPath;
@@ -58,9 +61,18 @@ public class VideoController {
 
     @Value("${app.upload.dir:${user.home}/movies/archive}")
     private String uploadDir;
-
     @GetMapping(value = "/upload")
-   public ResponseEntity<Metadata> upload(@RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
+    public ResponseEntity<Metadata> upload(@RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
+
+        try {
+            routeStatus.uploadPathCheck(uploadDir);
+        } catch (NullPointerException e){
+            log.error(e.toString());
+            log.info("해당 경로에 폴더를 생성하였습니다.");
+            File dir = new File(uploadDir);
+            dir.mkdirs();
+        }
+
         String fileOriginalFilename = file.getOriginalFilename();
         assert fileOriginalFilename != null;
 
