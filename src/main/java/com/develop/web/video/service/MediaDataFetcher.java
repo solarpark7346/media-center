@@ -5,7 +5,6 @@ import com.develop.web.video.dto.Metadata;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
@@ -16,6 +15,7 @@ public class MediaDataFetcher {
      * @param filePath 파일 경로
      * @json data
      * - filename : 파일 이름
+     * - file_path : 파일 경로
      * - width : 가로
      * - height : 세로
      * - format_name : 포멧 이름
@@ -32,6 +32,7 @@ public class MediaDataFetcher {
         Metadata metadata = new Metadata();
 
         metadata.id = fileDto.uuid;
+        metadata.file_path = filePath;
         metadata.filename = fileDto.originalFileName;
         metadata.ext = fileDto.ext;
         metadata.width = probeResult.getStreams().get(0).width;

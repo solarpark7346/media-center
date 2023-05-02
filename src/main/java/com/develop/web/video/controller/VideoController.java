@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /* http://localhost:8081/swagger-ui */
@@ -42,7 +43,7 @@ public class VideoController {
     private FFprobe ffprobe;
 
     /**
-    * FFmpeg를 사용할 수 있도록 초기화기
+    * FFmpeg를 사용할 수 있도록 초기화
     * */
     @PostConstruct
     public void init(){
@@ -59,17 +60,23 @@ public class VideoController {
         }
     }
 
-    @Value("${app.upload.dir:${user.home}/movies/archive}")
-    private String uploadDir;
-    @GetMapping(value = "/upload")
+    @Value("${app.upload.dir:${user.home}/movies/mam/archive/}")
+    private String uploadArchiveDir;
+
+    @Value("${app.upload.dir:${user.home}/movies/mam/archive/}")
+    private String uploadConvertingDir;
+
+    @PostMapping(value = "/upload")
     public ResponseEntity<Metadata> upload(@RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
+        LocalDate now = LocalDate.now();
+        String uploadDirDate = uploadArchiveDir + now;
 
         try {
-            routeStatus.uploadPathCheck(uploadDir);
+            routeStatus.uploadPathCheck(uploadDirDate);
         } catch (NullPointerException e){
             log.error(e.toString());
             log.info("해당 경로에 폴더를 생성하였습니다.");
-            File dir = new File(uploadDir);
+            File dir = new File(uploadDirDate);
             dir.mkdirs();
         }
 
@@ -85,8 +92,8 @@ public class VideoController {
         fileDto.ext = extractExt;
 
         String filenameUUID = uuid + "." + extractExt;
-        String source = uploadFile.copyFile(file, filenameUUID, uploadDir);
-        Metadata metadata = mediaDataFetcher.getMediaInfo(ffprobe, uploadDir+"/"+source, fileDto);
+        String source = uploadFile.copyFile(file, filenameUUID, uploadDirDate);
+        Metadata metadata = mediaDataFetcher.getMediaInfo(ffprobe, uploadDirDate+"/"+source, fileDto);
         System.out.println("\n▼ ResponseEntity ▼ " + metadata.toString());
 
         return ResponseEntity.ok().body(metadata);
