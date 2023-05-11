@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
 	implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.projectlombok:lombok:1.18.22'
