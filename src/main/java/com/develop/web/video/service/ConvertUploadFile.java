@@ -1,6 +1,6 @@
 package com.develop.web.video.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,16 +13,17 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 
-@Component
-public class UploadFile {
+@Service
+public class ConvertUploadFile {
 
     /**
     * @description 클라이언트에서 받은 미디어를 복사한다.
     * @param file 영상, uploadDir 업로드 경로
     * */
-    public String copyFile(MultipartFile file, String filenameUUID, String uploadDir) {
+    public String copyFile(MultipartFile file, String filenameUUID, String uploadConvertDir) {
 
-        Path copyOfLocation = Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(filenameUUID)));
+        Path copyOfLocation =
+                Paths.get(uploadConvertDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(filenameUUID)));
 
         try {
             Files.copy(file.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);

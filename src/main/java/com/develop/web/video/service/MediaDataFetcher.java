@@ -31,7 +31,7 @@ public class MediaDataFetcher {
 
         Metadata metadata = new Metadata();
 
-        metadata.id = fileDto.uuid;
+        metadata.clip_uuid = fileDto.uuid;
         metadata.file_path = filePath;
         metadata.filename = fileDto.originalFileName;
         metadata.ext = fileDto.ext;
