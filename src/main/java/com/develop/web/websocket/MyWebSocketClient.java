@@ -1,5 +1,6 @@
 package com.develop.web.websocket;
 
+import com.develop.web.video.dto.SendMessageDto;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,10 +21,10 @@ public class MyWebSocketClient {
         sessions.remove(session);
     }
 
-    public static void sendMessageToAll(String message) throws IOException {
+    public static void sendMessageToAll(SendMessageDto message) throws IOException {
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
-                session.sendMessage(new TextMessage(message));
+                session.sendMessage(new TextMessage(message.toJsonString()));
             }
         }
     }

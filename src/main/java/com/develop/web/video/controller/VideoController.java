@@ -12,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.websocket.DeploymentException;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -44,7 +42,8 @@ public class VideoController {
 
   @PostMapping(value = "/upload")
   public ResponseEntity<Metadata> upload(
-          @RequestParam(value = "files", required = false) MultipartFile file) throws IOException, DeploymentException, URISyntaxException {
+    @RequestParam(value = "files", required = false)MultipartFile file,
+    @RequestParam(value = "ingestId", required = false)Integer ingestId) throws IOException {
 
     LocalDate now = LocalDate.now();
     String ArchiveDirDate = uploadArchiveDir + now;
@@ -83,7 +82,7 @@ public class VideoController {
 
     String convertSource = convertUploadFile.copyFile(file, filenameUUID, ConvertDirDate);
     String convertingSource = convertingTemp + "/" + convertSource;
-    convert.transcoding(fileAPath, convertingSource);
+    convert.transcoding(ingestId, fileAPath, convertingSource);
 
     String fileCPath = ConvertDirDate + "/" + convertSource;
     Metadata convertMetadata = mediaDataFetcher.getMediaInfo(videoFileUtils.ffprobe, convertingSource, fileDto);
