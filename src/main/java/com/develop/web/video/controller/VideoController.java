@@ -25,8 +25,7 @@ public class VideoController {
 
   private final VideoFileUtils videoFileUtils;
   private final FetcherFileExt fetcherFileExt;
-  private final ConvertUploadFile convertUploadFile;
-  private final ArchiveUploadFile archiveUploadFile;
+  private final UploadFile uploadFile;
   private final MediaDataFetcher mediaDataFetcher;
   private final RouteStatus routeStatus;
   private final Convert convert;
@@ -75,19 +74,16 @@ public class VideoController {
     String filenameUUID = uuid + "." + extractExt;
     String filenameOriginal = fileOriginalFilename + "." + extractExt;
 
-    String archiveSource = archiveUploadFile.copyFile(file, filenameOriginal, ArchiveDirDate);
+    String archiveSource = uploadFile.copyFile(file, filenameOriginal, ArchiveDirDate);
     String fileAPath = ArchiveDirDate + "/" + archiveSource;
     Metadata archiveMetadata = mediaDataFetcher.getMediaInfo(videoFileUtils.ffprobe, fileAPath, fileDto);
     System.out.println("\n▼ ArchiveResponseEntity ▼ " + archiveMetadata.toString());
 
-    String convertSource = convertUploadFile.copyFile(file, filenameUUID, ConvertDirDate);
+    String convertSource = uploadFile.copyFile(file, filenameUUID, ConvertDirDate);
     String convertingSource = convertingTemp + "/" + convertSource;
-    convert.transcoding(ingestId, fileAPath, convertingSource);
+    Metadata result = convert.transcoding(ingestId, fileAPath, convertingSource, fileDto);
+    System.out.println("\n▼ ConvertResponseEntity ▼ " + result.toString());
 
-    String fileCPath = ConvertDirDate + "/" + convertSource;
-    Metadata convertMetadata = mediaDataFetcher.getMediaInfo(videoFileUtils.ffprobe, convertingSource, fileDto);
-    System.out.println("\n▼ ConvertResponseEntity ▼ " + convertMetadata.toString());
-
-    return ResponseEntity.ok().body(convertMetadata);
+    return ResponseEntity.ok().body(result);
   }
 }
