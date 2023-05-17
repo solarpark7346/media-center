@@ -14,16 +14,16 @@ import java.util.Objects;
 
 
 @Service
-public class ConvertUploadFile {
+public class UploadFile {
 
     /**
     * @description 클라이언트에서 받은 미디어를 복사한다.
     * @param file 영상, uploadDir 업로드 경로
     * */
-    public String copyFile(MultipartFile file, String filenameUUID, String uploadConvertDir) {
+    public String copyFile(MultipartFile file, String filename, String uploadDir) {
 
         Path copyOfLocation =
-                Paths.get(uploadConvertDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(filenameUUID)));
+                Paths.get(uploadDir + File.separator + StringUtils.cleanPath(Objects.requireNonNull(filename)));
 
         try {
             Files.copy(file.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -32,7 +32,7 @@ public class ConvertUploadFile {
             throw new RuntimeException("Could not store file : " + file.getOriginalFilename());
         }
 
-        return filenameUUID;
+        return filename;
     }
 
 }
