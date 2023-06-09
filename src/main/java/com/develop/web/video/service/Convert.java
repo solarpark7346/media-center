@@ -1,5 +1,6 @@
 package com.develop.web.video.service;
 
+import com.develop.web.video.dto.Codec;
 import com.develop.web.video.dto.FileDto;
 import com.develop.web.video.dto.Metadata;
 import com.develop.web.video.dto.SendMessageDto;
@@ -26,13 +27,20 @@ public class Convert {
 
   public Metadata transcoding(Integer ingestId, String filePath, String outputPath, FileDto fileDto) throws IOException {
 
-    FFmpegBuilder builder = new FFmpegBuilder().setInput(filePath)
-            .overrideOutputFiles(true)
-            .addOutput(outputPath)
-            .disableSubtitle()
-            .setVideoResolution(1280, 720)
-            .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
-            .done();
+    long bitrate = 220_000_000L;
+
+    FFmpegBuilder builder = new FFmpegBuilder()
+        .setInput(filePath)
+        .overrideOutputFiles(true)
+        .addOutput(outputPath)
+        .disableSubtitle()
+        .setVideoCodec("dnxhd")
+        .setVideoResolution(1280, 720)
+        .setVideoBitRate(bitrate)
+        .setVideoFrameRate(30)
+        .addExtraArgs("-format", "yuv422p")
+        .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
+        .done();
 
     FFmpegExecutor executor = new FFmpegExecutor(videoFileUtils.ffmpeg, videoFileUtils.ffprobe);
     FFmpegProbeResult probeResult = videoFileUtils.ffprobe.probe(filePath);
