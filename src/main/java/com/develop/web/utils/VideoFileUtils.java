@@ -12,11 +12,11 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @Component
 public class VideoFileUtils {
-  @Value("/opt/homebrew/Cellar/ffmpeg/5.1.2_6/bin/ffmpeg")
+  @Value("/opt/homebrew/Cellar/ffmpeg/6.0/bin/ffmpeg")
   public String ffmpegPath;
   public FFmpeg ffmpeg;
 
-  @Value("/opt/homebrew/Cellar/ffmpeg/5.1.2_6/bin/ffprobe")
+  @Value("/opt/homebrew/Cellar/ffmpeg/6.0/bin/ffprobe")
   private String ffprobePath;
   public FFprobe ffprobe;
 
